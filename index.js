@@ -181,6 +181,7 @@ app.post("/create-user", async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
 app.delete("/delete-user/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
@@ -392,7 +393,55 @@ app.get("/users/:username/posts", async (req, res) => {
 //   }
 // });
 
-app.put("/update-user/:userId", async (req, res) => {});
+app.put("/update-user/:userId", async (req, res) => {
+  //WE CAN GET  coverPhoto || profilePicture
+  try {
+    const { userId } = req.params;
+    const { profilePicture, coverPhoto } = req.body;
+    console.log({ profilePicture, coverPhoto });
+    //VALIDATE THE profile and cover photo URLs
+    if (!profilePicture && !coverPhoto) {
+      return res
+        .status(400)
+        .json({ error: "At least profilePicture or coverPhoto is required" });
+    }
+    // Update user information in Firestore
+    await db.collection("users").doc(userId).update({
+      // bio,
+      // name,
+      profilePicture,
+      coverPhoto,
+      // category,
+    });
+
+    res.status(200).json({ message: "User updated successfully" });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+//  `https://content-creator-service.vercel.app/update-user/${userInfo.id}`,
+//         {
+//           method: "PATCH",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({
+//             coverPhoto: newCoverUrl,
+//           }),
+//         }
+
+//         `https://content-creator-service.vercel.app/update-user/${userInfo.id}`,
+//         {
+//           method: "PATCH",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({
+//             profilePicture: newProfileUrl,
+//           }),
+//         }
 
 app.put("/update-post-likes/:postId", async (req, res) => {
   try {
