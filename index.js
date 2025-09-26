@@ -405,14 +405,24 @@ app.put("/update-user/:userId", async (req, res) => {
         .status(400)
         .json({ error: "At least profilePicture or coverPhoto is required" });
     }
+    if (profilePicture) {
+      await db.collection("users").doc(userId).update({
+        // bio,
+        // name,
+        profilePicture,
+        // coverPhoto,
+        // category,
+      });
+    } else if (coverPhoto) {
+      await db.collection("users").doc(userId).update({
+        // bio,
+        // name,
+        // profilePicture,
+        coverPhoto,
+        // category,
+      });
+    }
     // Update user information in Firestore
-    await db.collection("users").doc(userId).update({
-      // bio,
-      // name,
-      profilePicture,
-      coverPhoto,
-      // category,
-    });
 
     res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
